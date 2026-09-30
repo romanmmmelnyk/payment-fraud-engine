@@ -51,7 +51,7 @@ def split_rows(y):
     return np.concatenate(train), np.concatenate(test)
 
 
-def fit_weights(x, y):
+def fit_weights(x, y, ridge=0.0):
     ones = np.ones((len(x), 1))
     design = np.column_stack([ones, x])
     weights = np.zeros(design.shape[1])
@@ -61,6 +61,8 @@ def fit_weights(x, y):
         variance = np.clip(proba * (1 - proba), 1e-6, None)
         gradient = design.T @ (proba - y) / len(y)
         hessian = (design.T * variance) @ design / len(y)
+        if ridge:
+            hessian = hessian + np.eye(hessian.shape[0]) * ridge
         weights -= np.linalg.solve(hessian, gradient)
     return weights
 

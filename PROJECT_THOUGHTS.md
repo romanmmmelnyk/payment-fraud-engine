@@ -29,3 +29,27 @@ After the first dataset failed to provide a meaningful behavioural signal, I dec
 
 ### Result of a new dataset:
 A larger dataset does not really change the picture, so I think the pattern we are looking for does not exist only inside the payment itself. The first things that come to my mind are the device being used, the merchant type, how new the merchant is for the customer, the merchant’s security risk, and whether the transaction amount is abnormal for the customer’s usual profile. These factors could give us much more context than the payment data alone.
+
+### Larger dataset
+I decided to move to a new dataset, **IEEE-CIS Fraud Detection**, from Kaggle. Unlike the previous datasets, it contains a much wider range of features around each transaction, including card information, device data, identity attributes, email domains, addresses, time-based features, and other transaction context. This should allow me to investigate whether fraud signals appear when the payment is analysed together with the customer, device, and surrounding context rather than as an isolated transaction.
+### Larger dataset result:
+With the IEEE-CIS dataset, things look much more interesting. The logistic regression can actually see a fraud signal here, with an AUC of 0.75 compared with around 0.51 on the previous datasets. There are 590,540 transactions, and about 3.5% of them are fraud. Only 24% of transactions have device information, but fraud is much more common in that group, 8.0% compared with 2.1% without it. The transaction amount is still not very useful on its own, while things like product type, card type, device, identity information, email domain, and transaction time show much stronger differences. The model also puts more fraud into the higher-risk scores: the top 10% contain 14.6% fraud, and this goes up to 28% when we only look at transactions with known device information. This makes me think that the context around a payment is much more important than the payment itself.
+
+
+## Conclusion: 
+During a payment, I want the system to look at the whole context instead of judging the transaction by one or two fields.
+
+- Customer behaviour and usual spending
+- Transaction amount compared to their normal amounts
+- Device and whether it is new
+- Merchant and whether it is new for the customer
+- Merchant type and merchant risk
+- Location and unusual changes
+- Time and transaction frequency
+- Previous payment history
+- Device and merchant history
+- Security signals such as IP or authentication
+- ML risk score
+- Combination of several unusual signals
+
+Each signal should contribute to the final confidence. Several small unusual things together can be much more important than one unusual field. The final score should then decide whether the payment can go through, needs extra verification, or should be blocked.

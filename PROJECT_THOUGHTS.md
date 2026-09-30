@@ -23,3 +23,6 @@ The current analysis can be run with:
 data-lab\.venv\Scripts\python.exe data-lab\main.py
 
 The main conclusion from this analysis is that this dataset does not contain enough behavioural signal to build a useful fraud detector. Individual features, combinations, and behavioural features all produced results close to random, and the logistic regression model confirmed this with an AUC of around 0.5. Instead of forcing more features onto the same data, I want to step back and ask what information a real payment system would need to capture in order to identify meaningful risk. This moves the project from simply analysing an existing dataset towards designing the data and behaviour model that our fraud engine actually needs.
+
+### New Dataset
+After the first dataset failed to provide a meaningful behavioural signal, I decided to look for data that was built around transaction sequences rather than isolated transactions. I found the **Behavioral Fraud Detection: Sequence-Aware Modeling of Transaction Patterns** dataset by Jash Surendra. This is more aligned with the direction of the project because it allows me to analyse transactions as part of a customer's history and look for changes in behaviour over time.

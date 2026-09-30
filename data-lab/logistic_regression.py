@@ -5,10 +5,11 @@ from behavior import BEHAVIOR_FEATURES
 RAW_FEATURES = ["amount", "customer_age"]
 
 
-def run_logistic_regression(df):
-    fit_model(df, RAW_FEATURES, "raw")
+def run_logistic_regression(df, raw_features=None):
+    raw = RAW_FEATURES if raw_features is None else raw_features
+    fit_model(df, raw, "raw")
     fit_model(df, BEHAVIOR_FEATURES, "behavior")
-    fit_model(df, RAW_FEATURES + BEHAVIOR_FEATURES, "raw_and_behavior")
+    fit_model(df, list(raw) + BEHAVIOR_FEATURES, "raw_and_behavior")
 
 
 def fit_model(df, columns, name):

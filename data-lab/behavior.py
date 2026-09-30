@@ -96,12 +96,12 @@ def add_behavior_features(df):
     return pd.concat(parts, ignore_index=True)
 
 
-def search_patterns(df):
+def search_patterns(df, large_amount=5000):
     slices = {
         "burst_60s": df["transactions_last_60s"] >= 3,
-        "large_and_burst": (df["amount"] >= 5000) & (df["transactions_last_60s"] >= 3),
+        "large_and_burst": (df["amount"] >= large_amount) & (df["transactions_last_60s"] >= 3),
         "large_burst_new_place": (
-            (df["amount"] >= 5000)
+            (df["amount"] >= large_amount)
             & (df["transactions_last_60s"] >= 3)
             & (df["location_changed"] == 1)
             & (df["card_type_changed"] == 1)

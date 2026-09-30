@@ -26,3 +26,6 @@ The main conclusion from this analysis is that this dataset does not contain eno
 
 ### New Dataset
 After the first dataset failed to provide a meaningful behavioural signal, I decided to look for data that was built around transaction sequences rather than isolated transactions. I found the **Behavioral Fraud Detection: Sequence-Aware Modeling of Transaction Patterns** dataset by Jash Surendra. This is more aligned with the direction of the project because it allows me to analyse transactions as part of a customer's history and look for changes in behaviour over time.
+
+### Result of a new dataset:
+A larger dataset does not really change the picture, so I think the pattern we are looking for does not exist only inside the payment itself. The first things that come to my mind are the device being used, the merchant type, how new the merchant is for the customer, the merchant’s security risk, and whether the transaction amount is abnormal for the customer’s usual profile. These factors could give us much more context than the payment data alone.

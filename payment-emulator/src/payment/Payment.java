@@ -21,6 +21,33 @@ public record Payment(
         Instant time,
         int previousPayments,
         String ip,
-        boolean authenticated
+        boolean authenticated,
+        long secondsSincePrevious,
+        String decision
 ) {
+    public Payment withDecision(String decision) {
+        return new Payment(
+                customerId,
+                amount,
+                usualAmount,
+                amountComparedToUsual,
+                cardType,
+                productType,
+                email,
+                deviceId,
+                deviceNew,
+                merchantId,
+                merchantNew,
+                merchantType,
+                merchantRisk,
+                location,
+                locationChanged,
+                time,
+                previousPayments,
+                ip,
+                authenticated,
+                secondsSincePrevious,
+                decision
+        );
+    }
 }

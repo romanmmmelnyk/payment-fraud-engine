@@ -1,13 +1,27 @@
 package payment;
 
+import payment.context.PaymentContext;
+import payment.fraud.FraudCheck;
+import payment.fraud.FraudEngine;
+import payment.history.PaymentHistory;
+
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class PaymentSystem {
-    private final Map<String, List<Payment>> payments = new HashMap<>();
+    private final PaymentHistory paymentHistory;
+    private final PaymentContext paymentContext;
+    private final FraudCheck fraudCheck;
+
+    public PaymentSystem() {
+        this(new PaymentHistory(), new PaymentContext(), new FraudEngine());
+    }
+
+    public PaymentSystem(PaymentHistory paymentHistory, PaymentContext paymentContext, FraudCheck fraudCheck) {
+        this.paymentHistory = paymentHistory;
+        this.paymentContext = paymentContext;
+        this.fraudCheck = fraudCheck;
+    }
 
     public Payment pay(
             String customerId,
@@ -24,57 +38,29 @@ public class PaymentSystem {
             String ip,
             boolean authenticated
     ) {
-        List<Payment> previous = payments.computeIfAbsent(customerId, id -> new ArrayList<>());
-        double usualAmount = 0;
-        double amountComparedToUsual = 0;
-        if (!previous.isEmpty()) {
-            double sum = 0;
-            for (Payment payment : previous) {
-                sum += payment.amount();
-            }
-            usualAmount = sum / previous.size();
-            amountComparedToUsual = amount - usualAmount;
-        }
-        boolean deviceNew = true;
-        boolean merchantNew = true;
-        for (Payment payment : previous) {
-            if (payment.deviceId().equals(deviceId)) {
-                deviceNew = false;
-            }
-            if (payment.merchantId().equals(merchantId)) {
-                merchantNew = false;
-            }
-        }
-        boolean locationChanged = false;
-        if (!previous.isEmpty()) {
-            locationChanged = !previous.get(previous.size() - 1).location().equals(location);
-        }
-        Payment payment = new Payment(
+        List<Payment> previous = paymentHistory.previous(customerId);
+        Payment payment = paymentContext.build(
                 customerId,
                 amount,
-                usualAmount,
-                amountComparedToUsual,
                 cardType,
                 productType,
                 email,
                 deviceId,
-                deviceNew,
                 merchantId,
-                merchantNew,
                 merchantType,
                 merchantRisk,
                 location,
-                locationChanged,
                 time,
-                previous.size(),
                 ip,
-                authenticated
+                authenticated,
+                previous
         );
-        previous.add(payment);
+        payment = payment.withDecision(fraudCheck.checkPaymentForFraud(payment));
+        paymentHistory.add(customerId, payment);
         return payment;
     }
 
     public List<Payment> history(String customerId) {
-        return List.copyOf(payments.getOrDefault(customerId, List.of()));
+        return paymentHistory.history(customerId);
     }
 }

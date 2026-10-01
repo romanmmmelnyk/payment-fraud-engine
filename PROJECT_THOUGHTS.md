@@ -24,6 +24,7 @@ data-lab\.venv\Scripts\python.exe data-lab\main.py
 
 The main conclusion from this analysis is that this dataset does not contain enough behavioural signal to build a useful fraud detector. Individual features, combinations, and behavioural features all produced results close to random, and the logistic regression model confirmed this with an AUC of around 0.5. Instead of forcing more features onto the same data, I want to step back and ask what information a real payment system would need to capture in order to identify meaningful risk. This moves the project from simply analysing an existing dataset towards designing the data and behaviour model that our fraud engine actually needs.
 
+At this stage, I understand that meaningful fraud detection will likely depend heavily on customer behaviour and transaction context. However, before introducing these external behavioural signals, I want to first establish whether there are any meaningful patterns within the payment transactions themselves. This gives us a clear baseline before expanding the model to customer, device, merchant, and other contextual data.
 ### New Dataset
 After the first dataset failed to provide a meaningful behavioural signal, I decided to look for data that was built around transaction sequences rather than isolated transactions. I found the **Behavioral Fraud Detection: Sequence-Aware Modeling of Transaction Patterns** dataset by Jash Surendra. This is more aligned with the direction of the project because it allows me to analyse transactions as part of a customer's history and look for changes in behaviour over time.
 
@@ -53,3 +54,6 @@ During a payment, I want the system to look at the whole context instead of judg
 - Combination of several unusual signals
 
 Each signal should contribute to the final confidence. Several small unusual things together can be much more important than one unusual field. The final score should then decide whether the payment can go through, needs extra verification, or should be blocked.
+
+## Payment emulator
+I built a simple `payment-emulator` that keeps the payment history of each customer in memory. Each `pay` call records a new payment and immediately adds context based on that customer’s previous payments. The system receives the amount, card type, product, email, device, merchant, merchant type and risk, location, time, IP, and authentication status. It then calculates things such as the customer’s usual amount, how different the current amount is, whether the device or merchant is new, whether the location has changed, and how many previous payments the customer has made. The first payment has no history to compare against, while each customer keeps a separate history. This gives us the basic context we need to start combining card, product, email, and device signals. Java is not installed on the machine yet, so the tests have not been run.

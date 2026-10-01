@@ -11,6 +11,9 @@ public class PaymentSystemTest {
         Payment first = system.pay(
                 "customer-1",
                 40,
+                "credit",
+                "C",
+                "anna@outlook.com",
                 "phone-1",
                 "shop-1",
                 "grocery",
@@ -28,10 +31,16 @@ public class PaymentSystemTest {
         check(first.previousPayments() == 0, "first payment has no history");
         check(first.authenticated(), "authentication is stored");
         check("10.0.0.1".equals(first.ip()), "ip is stored");
+        check("credit".equals(first.cardType()), "card type is stored");
+        check("C".equals(first.productType()), "product type is stored");
+        check("anna@outlook.com".equals(first.email()), "email is stored");
 
         Payment second = system.pay(
                 "customer-1",
                 70,
+                "debit",
+                "W",
+                "anna@gmail.com",
                 "phone-1",
                 "shop-2",
                 "travel",
@@ -49,6 +58,9 @@ public class PaymentSystemTest {
         check(second.previousPayments() == 1, "one previous payment is counted");
         check("high".equals(second.merchantRisk()), "merchant risk is stored");
         check(!second.authenticated(), "missing authentication is stored");
+        check("debit".equals(second.cardType()), "second card type is stored");
+        check("W".equals(second.productType()), "second product type is stored");
+        check("anna@gmail.com".equals(second.email()), "second email is stored");
 
         check(system.history("customer-1").size() == 2, "history keeps both payments");
         check(system.history("customer-2").isEmpty(), "another customer starts empty");
@@ -56,6 +68,9 @@ public class PaymentSystemTest {
         Payment other = system.pay(
                 "customer-2",
                 15,
+                "credit",
+                "C",
+                "other@gmail.com",
                 "phone-1",
                 "shop-1",
                 "grocery",
